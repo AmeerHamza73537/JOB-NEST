@@ -7,6 +7,12 @@ import { MdOutlineMailOutline } from "react-icons/md";
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
 
+
+  const handleSubmit = async (e)=>{
+    e.preventDefault()
+    
+  }
+
   return (
     <div className="min-h-screen flex">
       {/* LEFT SIDE */}
@@ -36,7 +42,7 @@ const Signup = () => {
             Join millions finding their dream careers
           </p>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             {/* Full Name */}
             <div>
               <label className="block text-sm font-medium mb-1">

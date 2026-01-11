@@ -5,16 +5,14 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
     
 dotenv.config()
-
 mongoose
     .connect(process.env.MONGO)
     .then(()=>{
         console.log('connected to MONGODB')
     })
     .catch((err)=>console.log(err))
-
+    
 const app = express()
-
 
 app.use((err, req, res, next)=>{
     const statusCode = err.statusCode || 500
