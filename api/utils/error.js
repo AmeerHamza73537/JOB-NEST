@@ -1,6 +1,6 @@
-export const errorHandler = (res, error)=>{
-    const error = new Error()
-    error.statusCode = 500
-    error.message = 'Internal Server Error'
-    return error;
-}
+export const errorHandler = (statusCode, message) => {
+  const error = new Error();
+  error.statusCode = statusCode;
+  error.message = message;
+  return error;
+};

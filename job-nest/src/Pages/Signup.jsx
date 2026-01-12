@@ -1,16 +1,53 @@
 import React from "react";
 import { useState } from "react";
 import OAuth from "../Components/OAuth.jsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MdOutlineMailOutline } from "react-icons/md";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({})
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const navigate = useNavigate();
 
 
+  const handleChange = (e)=>{
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    })
+  }
   const handleSubmit = async (e)=>{
     e.preventDefault()
-    
+    try {
+      setLoading(true);
+      const res = await fetch('http://localhost:3000/api/auth/sign-up', {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+
+      const data = await res.json()
+      if (!res.ok || data.success === false){
+        setLoading(false)
+        setError(data.message || 'Failed to create account')
+        return
+      }
+      if(formData.password.length < 8) {
+        return
+      }
+      setLoading(false)
+      setError(null)
+      navigate('/sign-in')
+
+    } catch (error) {
+      setLoading(false)
+      setError(error.message)
+      console.log(error.message);
+    }
   }
 
   return (
@@ -49,9 +86,11 @@ const Signup = () => {
                 Full Name
               </label>
               <input
+                id="name"
                 type="text"
                 placeholder="John Doe"
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                onChange={handleChange}
               />
             </div>
 
@@ -61,9 +100,11 @@ const Signup = () => {
                 Email
               </label>
               <input
+                id="email"
                 type="email"
                 placeholder="you@example.com"
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                onChange={handleChange}
               />
             </div>
 
@@ -74,9 +115,11 @@ const Signup = () => {
               </label>
               <div className="relative">
                 <input
+                  id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a strong password"
                   className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  onChange={handleChange}
                 />
                 <button
                   type="button"
@@ -96,7 +139,7 @@ const Signup = () => {
               type="submit"
               className="w-full bg-gradient-to-r from-[#5fa2d8] to-[#3f7fb0] hover:font-bold hover:shadow-xl hover:cursor-pointer text-white py-3 rounded-lg font-semibold transition"
             >
-              Create Account
+              {loading ? 'Creating...':'Create Account'}
             </button>
           </form>
 
@@ -117,9 +160,9 @@ const Signup = () => {
           {/* Footer */}
           <p className="text-center text-sm text-gray-600 mt-6">
             Already have an account?{" "}
-            <span className="text-teal-600 font-medium cursor-pointer">
+            <Link to="/sign-in" className="text-teal-600 font-medium">
               Sign in
-            </span>
+            </Link>
           </p>
 
           <p className="text-xs text-gray-400 text-center mt-4">
