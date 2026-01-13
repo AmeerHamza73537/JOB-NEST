@@ -24,3 +24,33 @@ export const signup = async (req, res, next) => {
         next(error);
     }
 };
+
+export const signin = async (req, res, next) =>{
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return next(errorHandler(400, 'Please provide all required fields.'))
+    }
+    try {
+        const validUser = await User.findOne({ email });
+        if(!validUser) {
+            return next(errorHandler(404, 'User not found. Please sign up first.'))
+        }   
+        const validPassword = await bcrypt.compare(password, validUser.password)
+        if(!validPassword) {
+            return next(errorHandler(400, 'Invalid Password. Please try again.'))
+        }
+        const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET)
+        // Destructuring the password so it does not appear in the response
+        const { password: pass, ...rest } = validUser._doc;
+        // saving the token as a cookie
+        res.cookie("access_token", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+        })
+        .status(200)
+        .json(rest);
+    } catch (error) {
+        next(error)
+    }
+}

@@ -31,14 +31,16 @@ const Signup = () => {
       })
 
       const data = await res.json()
+      if(formData.password.length < 8) {
+        alert('Password must be at least 8 characters.')
+        return
+      }
       if (!res.ok || data.success === false){
         setLoading(false)
         setError(data.message || 'Failed to create account')
         return
       }
-      if(formData.password.length < 8) {
-        return
-      }
+      
       setLoading(false)
       setError(null)
       navigate('/sign-in')

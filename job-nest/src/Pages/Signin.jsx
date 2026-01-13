@@ -1,15 +1,49 @@
 import React, { useState } from "react";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { RiEyeLine } from "react-icons/ri";
-import OAuth from "../Components/OAuth.jsx";
-import { Link } from "react-router-dom";
 import { FaLock } from "react-icons/fa";
+import OAuth from "../Components/OAuth.jsx";
+import { Link, useNavigate } from "react-router-dom";
+import { signinStart, signinSuccess, signinFailure } from '../redux/user/UserSlice.js'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default function Signin() {
   const [showPassword, setShowPassword] = useState(false);
-//   const {loading, error} = useSelector((state) => state.user)
+  const [formData, setFormData ] = useState({})  
+  const { loading, error } = useSelector((state) => state.user)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
+  const handleChange = async (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    })
+  }
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      dispatch(signinStart())
+      const res = await fetch('/api/auth/sign-in', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      const data = await res.json()
+      if(!res.ok || data.success === false){
+        dispatch(signinFailure(data.message))
+        return
+      }
+      dispatch(signinSuccess(data))
+      navigate('/')
+    } catch (error) {
+      console.log(error);
+      dispatch(signinFailure(error.message))
+    }
+  }
 
   return (
     <section className="flex min-h-screen">
@@ -31,14 +65,16 @@ export default function Signin() {
           </p>
 
           {/* Form */}
-          <form className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             {/* Email */}
             <div className="relative">
               <MdOutlineMailOutline className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
               <input
+                id="email"
                 type="email"
                 placeholder="you@example.com"
                 className="w-full border border-gray-300 rounded-lg px-10 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                onChange={handleChange}
               />
             </div>
 
@@ -46,9 +82,11 @@ export default function Signin() {
             <div className="relative">
               <FaLock className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400"/>
               <input
+                id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 className="w-full border border-gray-300 rounded-lg px-10 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                onChange={handleChange}
               />
               <RiEyeLine
                 className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 cursor-pointer"
