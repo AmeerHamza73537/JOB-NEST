@@ -6,8 +6,19 @@ import {
 import { HiOutlineMail } from 'react-icons/hi';
 import { MdVerified } from 'react-icons/md';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux'
+import { updateUserStart, updateUserSuccess, updateUserFailure } from '../redux/user/UserSlice.js'
+import { useSelector } from 'react-redux';
+import { useRef } from 'react';
+import { useState } from 'react';
 
 const Profile = () => {
+  
+  const {currentUser, loading, error} = useSelector(state => state.user)
+  const [file, setFile] = useState(undefined)
+  const [formData, setFormData] = useState({})
+  
+  
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 font-sans">
       <div className="max-w-7xl mx-auto">
