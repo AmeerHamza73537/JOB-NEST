@@ -30,6 +30,7 @@ export default function Signin() {
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: 'include', // ensure cookies (Set-Cookie) are accepted and sent
         body: JSON.stringify(formData)
       })
       const data = await res.json()

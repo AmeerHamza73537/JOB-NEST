@@ -41,11 +41,11 @@ const Profile = () => {
             {/* User Info */}
             <div className="text-white text-center md:text-left flex-1">
               <h1 className="text-3xl font-bold flex items-center justify-center md:justify-start gap-2">
-                John Doe <MdVerified className="text-blue-300" />
+                {currentUser.name} <MdVerified className="text-blue-300" />
               </h1>
-              <p className="text-blue-100 text-lg">Senior Frontend Developer</p>
+              <p className="text-blue-100 text-lg">{currentUser.title}</p>
               <div className="flex items-center justify-center md:justify-start gap-4 mt-2 text-sm opacity-90">
-                <span className="flex items-center gap-1"><FaMapMarkerAlt /> San Francisco, CA</span>
+                <span className="flex items-center gap-1"><FaMapMarkerAlt />{currentUser.location}</span>
                 <span className="bg-green-500 px-3 py-0.5 rounded-full text-xs font-bold">Online</span>
               </div>
             </div>
@@ -71,7 +71,7 @@ const Profile = () => {
           <div className="space-y-6">
             <Card title="About Me">
               <p className="text-gray-600 text-sm leading-relaxed">
-                Passionate frontend developer with 5+ years of experience building scalable web applications. I love solving complex problems and designing clean, minimalist user interfaces.
+                {currentUser.bio ? (currentUser.bio) : ('Add Bio')}
               </p>
               <div className="mt-6">
                 <h4 className="font-bold mb-3 text-gray-800">Skills</h4>
@@ -99,9 +99,9 @@ const Profile = () => {
             </Card>
             <Card title="Contact Details">
               <div className="space-y-3 text-sm text-gray-600">
-                <div className="flex items-center gap-3"><HiOutlineMail className="text-blue-600" /> john.doe@example.com</div>
-                <div className="flex items-center gap-3"><FaLinkedin className="text-blue-600" /> linkedin.com/in/johndoe</div>
-                <div className="flex items-center gap-3"><FaGithub className="text-gray-900" /> github.com/johndoe</div>
+                <div className="flex items-center gap-3"><HiOutlineMail className="text-blue-600" /> {currentUser.email}</div>
+                <div className="flex items-center gap-3"><FaLinkedin className="text-blue-600" /> {currentUser.linkedin}</div>
+                <div className="flex items-center gap-3"><FaGithub className="text-gray-900" />{currentUser.github}</div>
               </div>
             </Card>
           </div>
@@ -154,12 +154,12 @@ const Card = ({ title, children, hasAdd = false }) => (
 const ExperienceItem = ({ company, role, date }) => (
   <div className="flex items-start gap-4 mb-6 last:mb-0">
     <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 flex-shrink-0 font-bold">
-      {company[0]}
+      {currentUser.company[0]}
     </div>
     <div>
-      <h4 className="font-bold text-gray-900 leading-none">{company}</h4>
-      <p className="text-sm text-blue-600 font-medium my-1">{role}</p>
-      <p className="text-xs text-gray-400">{date}</p>
+      <h4 className="font-bold text-gray-900 leading-none">{currentUser.company}</h4>
+      <p className="text-sm text-blue-600 font-medium my-1">{currentUser.role}</p>
+      <p className="text-xs text-gray-400">{currentUser.date}</p>
     </div>
   </div>
 );

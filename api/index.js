@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import authRoute from './route/auth.route.js'
+import userRoute from './route/user.route.js'
 
 dotenv.config()
 mongoose
@@ -17,9 +18,15 @@ const app = express()
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // frontend URL
+  credentials: true               // allow cookies or Authorization headers
+}));
 
 app.use('/api/auth',authRoute)
+app.use('/api/user',userRoute)
+// app.use('/api/auth',authRoute)
 
 app.use((err, req, res, next)=>{
     const statusCode = err.statusCode || 500
