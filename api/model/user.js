@@ -36,10 +36,7 @@ const userSchema = new mongoose.Schema(
       {
         company: String,
         role: String,
-        startDate: Date,
-        endDate: Date,
-        isCurrent: Boolean,
-        description: String,
+        period: String,
       },
     ],
     contactDetails: {
@@ -60,6 +57,14 @@ const userSchema = new mongoose.Schema(
     },
     skills: [String],
     title: {
+      type: String,
+      required: false,
+    },
+    linkedin: {
+      type: String,
+      required: false,
+    },
+    github: {
       type: String,
       required: false,
     },

@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  console.log(currentUser);
+  // console.log(currentUser);
 
   return (
     <header className=" sticky top-0 z-50 glass-bg backdrop-blur-xl shadow-lg">

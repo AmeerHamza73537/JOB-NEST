@@ -6,8 +6,6 @@ import {
 import { HiOutlineMail } from 'react-icons/hi';
 import { MdVerified } from 'react-icons/md';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux'
-import { updateUserStart, updateUserSuccess, updateUserFailure } from '../redux/user/UserSlice.js'
 import { useSelector } from 'react-redux';
 import { useRef } from 'react';
 import { useState } from 'react';
@@ -18,6 +16,7 @@ const Profile = () => {
   const [file, setFile] = useState(undefined)
   const [formData, setFormData] = useState({})
   
+  console.log(currentUser);
   
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 font-sans">
@@ -71,12 +70,18 @@ const Profile = () => {
           <div className="space-y-6">
             <Card title="About Me">
               <p className="text-gray-600 text-sm leading-relaxed">
-                {currentUser.bio ? (currentUser.bio) : ('Add Bio')}
+                {currentUser.bio ? (currentUser.bio) : (
+                  <p className='text-center '>
+                    <Link to='/update-profile'>
+                      +Add Bio
+                    </Link>
+                  </p>
+                )}
               </p>
               <div className="mt-6">
                 <h4 className="font-bold mb-3 text-gray-800">Skills</h4>
                 <div className="flex flex-wrap gap-2">
-                  {['React', 'Tailwind', 'Node.js', 'Python', 'Git', 'Docker'].map(skill => (
+                  {currentUser.skills && currentUser.skills.map(skill => (
                     <span key={skill} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-xs font-medium border border-gray-200">
                       {skill}
                     </span>
@@ -86,8 +91,9 @@ const Profile = () => {
             </Card>
 
             <Card title="Work Experience" hasAdd>
-              <ExperienceItem company="TechCorp, Inc." role="Lead Developer" date="2021 - Present" />
-              <ExperienceItem company="StartupXYZ" role="Frontend Dev" date="2018 - 2021" />
+              {currentUser.workExperience && currentUser.workExperience.map((exp, index) => (
+                <ExperienceItem key={index} company={exp.company} role={exp.role} date={exp.period} />
+              ))}
             </Card>
           </div>
 
@@ -154,12 +160,12 @@ const Card = ({ title, children, hasAdd = false }) => (
 const ExperienceItem = ({ company, role, date }) => (
   <div className="flex items-start gap-4 mb-6 last:mb-0">
     <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 flex-shrink-0 font-bold">
-      {currentUser.company[0]}
+      {company ? company[0].toUpperCase() : ''}
     </div>
     <div>
-      <h4 className="font-bold text-gray-900 leading-none">{currentUser.company}</h4>
-      <p className="text-sm text-blue-600 font-medium my-1">{currentUser.role}</p>
-      <p className="text-xs text-gray-400">{currentUser.date}</p>
+      <h4 className="font-bold text-gray-900 leading-none">{company}</h4>
+      <p className="text-sm text-blue-600 font-medium my-1">{role}</p>
+      <p className="text-xs text-gray-400">{date}</p>
     </div>
   </div>
 );

@@ -17,7 +17,7 @@ import {
   updateUserSuccess,
   updateUserFailure,
 } from "../redux/user/UserSlice.js";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const UpdateProfile = () => {
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -29,10 +29,11 @@ const UpdateProfile = () => {
     status: '',
     bio: '',
   });
-  const [experience, setExperience] = useState([{ jobTitle: "", company: "", period: "" }]);
+  const [experience, setExperience] = useState([{ role: "", company: "", period: "" }]);
   const [skills, setSkills] = useState([""]);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // Initialize form state from currentUser
   useEffect(() => {
@@ -48,8 +49,8 @@ const UpdateProfile = () => {
 
       setExperience(
         currentUser.workExperience && currentUser.workExperience.length
-          ? currentUser.workExperience.map((e) => ({ jobTitle: e.role || e.jobTitle || '', company: e.company || '', period: e.period || '' }))
-          : [{ jobTitle: "", company: "", period: "" }]
+          ? currentUser.workExperience.map((e) => ({ role: e.role || '', company: e.company || '', period: e.period || '' }))
+          : [{ role: "", company: "", period: "" }]
       );
 
       setSkills(currentUser.skills && currentUser.skills.length ? currentUser.skills : [""]);
@@ -86,7 +87,7 @@ const UpdateProfile = () => {
 
   const handleAdd = (section) => {
     if (section === "experience") {
-      setExperience((prev) => [...prev, { jobTitle: "", company: "", period: "" }]);
+      setExperience((prev) => [...prev, { role: "", company: "", period: "" }]);
     }
     if (section === "skills") {
       setSkills((prev) => [...prev, ""]);
@@ -126,6 +127,7 @@ const UpdateProfile = () => {
       }
       setUpdateSuccess(true);
       dispatch(updateUserSuccess(data));
+      navigate('/profile');
     } catch (error) {
       dispatch(updateUserFailure(error.message));
     }
@@ -144,19 +146,7 @@ const UpdateProfile = () => {
               Manage your public presence and job preferences.
             </p>
           </div>
-          <div className="flex gap-3 w-full md:w-auto">
-            <button className="flex-1 md:flex-none px-6 py-2.5 bg-white border border-slate-200 rounded-2xl font-semibold text-slate-600 hover:bg-slate-100 transition shadow-sm">
-              Cancel
-            </button>
-            <Link to='/profile'>
-              <button
-              onClick={handleSubmit}
-              className="flex-1 md:flex-none px-8 py-2.5 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200"
-            >
-              Save Changes
-            </button>
-            </Link>
-          </div>
+          
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -297,9 +287,9 @@ const UpdateProfile = () => {
                       <div className="space-y-2">
                         <input
                           type="text"
-                          name="jobTitle"
+                          name="role"
                           placeholder="Job Title"
-                          value={exp.jobTitle}
+                          value={exp.role}
                           onChange={(e) => handleExperienceChange(e, index)}
                           className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition"
                         />
@@ -367,6 +357,19 @@ const UpdateProfile = () => {
                   </button>
                 </div>
               </div>
+              <div className="flex gap-3 w-full md:w-auto ">
+            <button className="flex-1 md:flex-none px-6 py-2.5 bg-white border border-slate-200 rounded-2xl font-semibold text-slate-600 hover:bg-slate-100 transition shadow-sm">
+              Cancel
+            </button>
+            {/* <Link to='/profile'> */}
+              <button
+              onClick={handleSubmit}
+              className="flex-1 md:flex-none px-8 py-2.5 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200"
+            >
+                Save Changes
+            </button>
+            {/* </Link> */}
+          </div>
             </div>
           </div>
         </form>

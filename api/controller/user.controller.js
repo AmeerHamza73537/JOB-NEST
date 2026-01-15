@@ -26,6 +26,8 @@ export const updateUser = async (req, res, next) => {
                 location: req.body.location,
                 resume: req.body.resume,
                 avatar: req.body.avatar,
+                linkedin: req.body.linkedin,
+                github: req.body.github,
             }
         }, {new: true})
 
