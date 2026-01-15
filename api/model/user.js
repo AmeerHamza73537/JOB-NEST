@@ -27,9 +27,7 @@ const userSchema = new mongoose.Schema(
       {
         institute: String,
         degree: String,
-        field: String,
-        startYear: Number,
-        endYear: Number,
+        period: String,
       },
     ],
     workExperience: [

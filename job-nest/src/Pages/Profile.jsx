@@ -100,8 +100,9 @@ const Profile = () => {
           {/* Column 2: Education & Projects */}
           <div className="space-y-6">
             <Card title="Education" hasAdd>
-              <ExperienceItem company="Stanford University" role="MS Computer Science" date="2016 - 2018" />
-              <ExperienceItem company="MIT" role="BS Software Engineering" date="2012 - 2016" />
+              {currentUser.education && currentUser.education.map((edu, index) => (
+                <ExperienceItem key={index} company={edu.institute} role={edu.degree} date={edu.period} />
+              ))}
             </Card>
             <Card title="Contact Details">
               <div className="space-y-3 text-sm text-gray-600">
@@ -119,7 +120,14 @@ const Profile = () => {
               <p className="text-sm text-gray-500 mb-6">List a job and connect with thousands of qualified professionals.</p>
               <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl flex items-center justify-center gap-2 transition mb-3">
                 <Link to='/create-job'>
-                  <FaPlus /> Post a Job
+                  <div className="flex gap-2 items-center">
+                    <div className="">
+                      <FaPlus /> 
+                    </div>
+                    <div className="">
+                      Post a Job
+                    </div>
+                  </div>
                 </Link>
               </button>
             </div>

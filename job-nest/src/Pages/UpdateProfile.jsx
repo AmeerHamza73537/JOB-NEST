@@ -31,6 +31,7 @@ const UpdateProfile = () => {
   });
   const [experience, setExperience] = useState([{ role: "", company: "", period: "" }]);
   const [skills, setSkills] = useState([""]);
+  const [education, setEducation] = useState([{ institute: "", degree: "", period: "" }]);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -54,6 +55,12 @@ const UpdateProfile = () => {
       );
 
       setSkills(currentUser.skills && currentUser.skills.length ? currentUser.skills : [""]);
+
+      setEducation(
+        currentUser.education && currentUser.education.length
+          ? currentUser.education.map((e) => ({ institute: e.institute || '', degree: e.degree || '', period: e.period || '' }))
+          : [{ institute: "", degree: "", period: "" }]
+      );
     }
   }, [currentUser]);
 
@@ -85,6 +92,15 @@ const UpdateProfile = () => {
     });
   };
 
+  const handleEducationChange = (e, index) => {
+    const { name, value } = e.target;
+    setEducation((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [name]: value };
+      return copy;
+    });
+  };
+
   const handleAdd = (section) => {
     if (section === "experience") {
       setExperience((prev) => [...prev, { role: "", company: "", period: "" }]);
@@ -102,6 +118,14 @@ const UpdateProfile = () => {
     setSkills((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleAddEducation = () => {
+    setEducation((prev) => [...prev, { institute: "", degree: "", period: "" }]);
+  };
+
+  const handleRemoveEducation = (index) => {
+    setEducation((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -111,6 +135,7 @@ const UpdateProfile = () => {
         bio: formData.bio,
         workExperience: experience,
         skills: skills.filter((s) => s && s.trim() !== ''),
+        education: education,
       };
       const res = await fetch(`http://localhost:3000/api/user/update-profile/${currentUser._id}`, {
         method: "POST",
@@ -313,6 +338,60 @@ const UpdateProfile = () => {
                       <button
                         type="button"
                         onClick={() => handleRemoveExperience(index)}
+                        className="text-slate-300 hover:text-red-500 transition p-2"
+                      >
+                        <FaTrash size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* EDUCATION SECTION (DYNAMIC) */}
+              <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-bold">Education</h3>
+                  <button
+                    type="button"
+                    onClick={handleAddEducation}
+                    className="flex items-center gap-2 text-blue-600 font-bold text-sm bg-blue-50 px-4 py-2 rounded-xl hover:bg-blue-100 transition"
+                  >
+                    <FaPlus size={12} /> Add New
+                  </button>
+                </div>
+
+                {education.map((edu, index) => (
+                  <div key={index} className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          name="institute"
+                          placeholder="University Name"
+                          value={edu.institute}
+                          onChange={(e) => handleEducationChange(e, index)}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition"
+                        />
+                        <input
+                          type="text"
+                          name="degree"
+                          placeholder="Degree"
+                          value={edu.degree}
+                          onChange={(e) => handleEducationChange(e, index)}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition"
+                        />
+                        <input
+                          type="text"
+                          name="period"
+                          placeholder="Period"
+                          value={edu.period}
+                          onChange={(e) => handleEducationChange(e, index)}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveEducation(index)}
                         className="text-slate-300 hover:text-red-500 transition p-2"
                       >
                         <FaTrash size={14} />

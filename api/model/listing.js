@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const listingSchema = new mongoose.Schema({
-    name: {
+    jobTitle: {
         type: String,
         required: true,
     },
@@ -17,11 +17,19 @@ const listingSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    workType: {
+        type: String,
+        required: true,
+    },
     salary: {
         type: String,
         required: true,
     },
-    jobType: {
+    deadline: {
+        type: Date,
+        required: true,
+    },
+    qualifications: {
         type: String,
         required: true,
     },
