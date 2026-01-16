@@ -11,24 +11,34 @@ const PostJob = () => {
   const { currentUser } = useSelector((state) => state.user)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
-  const [formData, seFormData] = useState({
+  const [formData, setFormData] = useState({
     jobTitle: '',
     description: '',
     workType: '',
     location: '',
-
+    maxSalary: '',
+    minSalary: '',
+    deadline: '',
+    qualifications: '',
+    skills: '',
   })
 
   const handleChange = async (e) => {
-
+      setFormData({
+        ...formData,
+        [e.target.id] : e.target.value,
+      })
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      
+      e.preventDefault()
+      const res = await fetch('/api/listing/create-listing', {})
     } catch (error) {
-      
+      console.log(error);
+      setError(error.message)
+      setLoading(false)
     }
   }
   return (
@@ -67,6 +77,7 @@ const PostJob = () => {
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-700 ml-1">Job Title</label>
             <input
+              id='jobTitle'
               type="text"
               name="title"
               placeholder="e.g. Senior Full Stack Developer"
@@ -79,7 +90,9 @@ const PostJob = () => {
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700 ml-1">Work Type</label>
               <select
+                id='workType'
                 name="workType"
+                onChange={handleChange}
                 className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl cursor-pointer"
               >
                 <option>Full-time</option>
@@ -93,7 +106,9 @@ const PostJob = () => {
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700 ml-1">Location / Remote</label>
               <select
+                id='location'
                 name="locationType"
+                onChange={handleChange}
                 className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl cursor-pointer"
               >
                 <option>Remote</option>
@@ -106,6 +121,7 @@ const PostJob = () => {
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-700 ml-1">Job Description</label>
             <textarea
+              id='description'
               name="description"
               rows="6"
               placeholder="Tell candidates about the role, the team, and the mission..."
@@ -130,6 +146,7 @@ const PostJob = () => {
             </label>
             <div className="flex items-center gap-3">
               <input
+                id='minSalary'
                 type="number"
                 name="salaryMin"
                 placeholder="Min"
@@ -138,6 +155,7 @@ const PostJob = () => {
               />
               <span className="text-slate-400">—</span>
               <input
+                id='maxSalary'
                 type="number"
                 name="salaryMax"
                 placeholder="Max"
@@ -152,6 +170,7 @@ const PostJob = () => {
               <FaClock /> Application Deadline
             </label>
             <input
+              id='deadline'
               type="date"
               name="deadline"
               onChange={handleChange}
@@ -172,6 +191,7 @@ const PostJob = () => {
           <div>
             <label className="text-sm font-bold text-slate-700">Required Qualifications</label>
             <input
+              id='qualifications'
               type="text"
               name="qualifications"
               placeholder="e.g. Bachelor's Degree in CS"
@@ -183,6 +203,7 @@ const PostJob = () => {
           <div>
             <label className="text-sm font-bold text-slate-700">Keywords / Skills</label>
             <input
+              id='skills'
               type="text"
               name="skills"
               placeholder="React, Node.js, AWS"

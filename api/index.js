@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import authRoute from './route/auth.route.js'
 import userRoute from './route/user.route.js'
+import listingRoute from './route/listing.route.js'
 
 dotenv.config()
 mongoose
@@ -26,6 +27,7 @@ app.use(cors({
 
 app.use('/api/auth',authRoute)
 app.use('/api/user',userRoute)
+app.use('/api/listing',listingRoute)
 // app.use('/api/auth',authRoute)
 
 app.use((err, req, res, next)=>{
