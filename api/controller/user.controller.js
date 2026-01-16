@@ -12,24 +12,20 @@ export const updateUser = async (req, res, next) => {
         if(req.body.password) {
             req.body.password = bcryptjs.hashSync(req.body.password, 10)
         }
-        const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-            $set: {
-                name: req.body.name,
-                email: req.body.email,
-                password: req.body.password,
-                bio: req.body.bio,
-                title: req.body.title,
-                skills:  req.body.skills,
-                education: req.body.education,
-                workExperience: req.body.workExperience,
-                contactDetails: req.body.contactDetails,
-                location: req.body.location,
-                resume: req.body.resume,
-                avatar: req.body.avatar,
-                linkedin: req.body.linkedin,
-                github: req.body.github,
+
+        // Build update object only with provided fields to avoid overwriting
+        const allowedFields = [
+            'name','email','password','bio','title','skills','education','workExperience',
+            'contactDetails','location','resume','avatar','linkedin','github'
+        ];
+        const updateObj = {};
+        allowedFields.forEach((f) => {
+            if (Object.prototype.hasOwnProperty.call(req.body, f)) {
+                updateObj[f] = req.body[f];
             }
-        }, {new: true})
+        });
+
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, { $set: updateObj }, { new: true })
 
         if(!updatedUser) {
             return next(errorHandler(404, 'User not found.'))

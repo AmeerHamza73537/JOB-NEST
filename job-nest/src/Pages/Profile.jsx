@@ -71,11 +71,11 @@ const Profile = () => {
             <Card title="About Me">
               <p className="text-gray-600 text-sm leading-relaxed">
                 {currentUser.bio ? (currentUser.bio) : (
-                  <p className='text-center '>
+                  
                     <Link to='/update-profile'>
                       +Add Bio
                     </Link>
-                  </p>
+
                 )}
               </p>
               <div className="mt-6">
