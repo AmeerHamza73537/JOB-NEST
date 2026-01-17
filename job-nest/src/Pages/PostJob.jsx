@@ -7,15 +7,16 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 const PostJob = () => {
-
+  const navigate = useNavigate()
   const { currentUser } = useSelector((state) => state.user)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const [formData, setFormData] = useState({
     jobTitle: '',
     description: '',
-    workType: '',
-    location: '',
+    workType: 'Full-Time',
+    location: 'Remote',
+    address: '',
     maxSalary: '',
     minSalary: '',
     deadline: '',
@@ -33,8 +34,27 @@ const PostJob = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      e.preventDefault()
-      const res = await fetch('/api/listing/create-listing', {})
+      setLoading(true)
+      setError(false)
+      
+      const res = await fetch('/api/listing/create-listing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          ...formData,
+          // userRef: currentUser._id,
+      })
+      })
+      const data = await res.json()
+      setLoading(false)
+      if(!res.ok || data.success === false) {
+        console.log(data.message);
+        return
+      }
+      navigate('/')
     } catch (error) {
       console.log(error);
       setError(error.message)
@@ -60,7 +80,7 @@ const PostJob = () => {
         type="submit"
         className="px-8 py-3 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200"
       >
-        Publish Job Listing
+        {loading ? 'Creating' : 'Publish a Job'}
       </button>
     </div>
 
@@ -83,6 +103,19 @@ const PostJob = () => {
               placeholder="e.g. Senior Full Stack Developer"
               onChange={handleChange}
               className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-slate-700 ml-1">Company</label>
+            <input
+              id='company'
+              type="text"
+              name="title"
+              placeholder="e.g. Your Company Name"
+              onChange={handleChange}
+              className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none"
             />
           </div>
 
@@ -94,6 +127,7 @@ const PostJob = () => {
                 name="workType"
                 onChange={handleChange}
                 className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl cursor-pointer"
+                required
               >
                 <option>Full-time</option>
                 <option>Part-time</option>
@@ -110,12 +144,24 @@ const PostJob = () => {
                 name="locationType"
                 onChange={handleChange}
                 className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl cursor-pointer"
+                required
               >
                 <option>Remote</option>
                 <option>On-site</option>
                 <option>Hybrid</option>
               </select>
             </div>
+            <div className="space-y-2">
+            <label className="text-sm font-bold text-slate-700 ml-1">Address</label>
+            <input
+              id='address'
+              type="text"
+              name="title"
+              placeholder="e.g. Los Angeles, US"
+              onChange={handleChange}
+              className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none"
+            />
+          </div>
           </div>
 
           <div className="space-y-2">
@@ -127,6 +173,7 @@ const PostJob = () => {
               placeholder="Tell candidates about the role, the team, and the mission..."
               onChange={handleChange}
               className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-[2rem] resize-none"
+              required
             />
           </div>
         </div>
@@ -152,6 +199,7 @@ const PostJob = () => {
                 placeholder="Min"
                 onChange={handleChange}
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl"
+                required
               />
               <span className="text-slate-400">—</span>
               <input
@@ -161,6 +209,7 @@ const PostJob = () => {
                 placeholder="Max"
                 onChange={handleChange}
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl"
+                required
               />
             </div>
           </div>
@@ -175,6 +224,7 @@ const PostJob = () => {
               name="deadline"
               onChange={handleChange}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl"
+              required
             />
           </div>
         </div>
@@ -197,6 +247,7 @@ const PostJob = () => {
               placeholder="e.g. Bachelor's Degree in CS"
               onChange={handleChange}
               className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-xl"
+              required
             />
           </div>
 
@@ -209,24 +260,11 @@ const PostJob = () => {
               placeholder="React, Node.js, AWS"
               onChange={handleChange}
               className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-xl"
+              required
             />
           </div>
         </div>
       </section>
-
-      {/* FOOTER */}
-      <div className="flex items-center justify-between p-6 bg-slate-900 rounded-[2rem] text-white">
-        <div className="hidden md:block">
-          <p className="font-bold">Ready to find your hire?</p>
-          <p className="text-slate-400 text-xs uppercase tracking-widest">Visibility: Public</p>
-        </div>
-        <button
-          type="submit"
-          className="px-10 py-3 bg-blue-600 rounded-xl font-bold"
-        >
-          Post Job Now
-        </button>
-      </div>
 
     </div>
   </div>

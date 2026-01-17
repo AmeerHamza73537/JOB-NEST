@@ -21,11 +21,11 @@ export default function Header() {
             </span>
           </Link>
         </div>
-        {/* <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4">
           <Link to='/' className="text-[#7A8A9E] hover:text-black transition">Find Jobs</Link>
           <Link to='/' className="text-[#7A8A9E] hover:text-black transition">Find Talents</Link>
           <Link to='/' className="text-[#7A8A9E] hover:text-black transition">Why JobNest?</Link>
-        </div> */}
+        </div>
         {currentUser ? (
           <Link to="/profile">
             <div className="flex items-center gap-2 cursor-pointer group">

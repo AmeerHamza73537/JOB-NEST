@@ -17,16 +17,24 @@ const listingSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    address: {
+        type: String,
+        required: false,
+    },
     workType: {
         type: String,
         required: true,
     },
-    salary: {
+    minSalary: {
+        type: String,
+        required: true,
+    },
+    maxSalary: {
         type: String,
         required: true,
     },
     deadline: {
-        type: Date,
+        type: String,
         required: true,
     },
     qualifications: {

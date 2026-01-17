@@ -1,9 +1,16 @@
-import React from 'react'
+import React from "react";
+import Hero from "../Components/HomeComponents/hero";
+import WhyUs from "../Components/HomeComponents/WhyUs";
+import Testimonials from "../Components/HomeComponents/Testimonials";
+import FinalCTA from "../Components/HomeComponents/FinalCTA";
 
-export default function Home() {
+export default function HeroSection() {
   return (
-    <div>
-      home
-    </div>
-  )
+    <>
+      <Hero />
+      <WhyUs />
+      <Testimonials />
+      <FinalCTA />
+    </>
+  );
 }

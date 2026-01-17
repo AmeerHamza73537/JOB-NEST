@@ -12,8 +12,10 @@ export const createListing = async (req, res, next) => {
             description,
             company,
             location,
+            address,
             workType,
-            salary,
+            minSalary,
+            maxSalary,
             deadline,
             qualifications,
             skills,
@@ -21,13 +23,14 @@ export const createListing = async (req, res, next) => {
 
         if(!jobTitle ||
             !description ||
-            !company ||
             !location ||
             !workType ||
-            !salary ||
+            !minSalary ||
+            !maxSalary ||
             !deadline ||
             !qualifications ||
-            !skills) {
+            !skills
+        ) {
                 return next(errorHandler(400, 'Please provide all required fields.'))
         }
         const listing = await Listing.create({
@@ -35,8 +38,10 @@ export const createListing = async (req, res, next) => {
             description,
             company,
             location,
+            address,
             workType,
-            salary,
+            minSalary,
+            maxSalary,
             deadline,
             qualifications,
             skills,
