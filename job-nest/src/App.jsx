@@ -26,7 +26,7 @@ function App() {
           <Route path='/'element={<Home/>} />
           <Route path='/sign-in'element={<Signin/>} />
           <Route path='/sign-up'element={<Signup/>} />
-          <Route path='/profile'element={<Profile/>} />
+          <Route path='/profile/:userId?' element={<Profile/>} />
           <Route path='/create-job'element={<PostJob/>} />
           <Route path='/update-profile'element={<UpdateProfile/>} />
           <Route path='/search-job'element={<SearchJobs/>} />

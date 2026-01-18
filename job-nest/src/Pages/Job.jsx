@@ -8,6 +8,7 @@ export default function Job() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [contact, setContact] = useState(false)
+  const [owner, setOwner] = useState(null);
   const params = useParams();
   const { currentUser } = useSelector((state) => state.user);
 
@@ -27,6 +28,13 @@ export default function Job() {
         setListing(data);
         setLoading(false);
         setError(false);
+
+        // Fetch owner details
+        const ownerRes = await fetch(`/api/user/${data.userRef}`, {
+          credentials: 'include'
+        });
+        const ownerData = await ownerRes.json();
+        setOwner(ownerData);
       } catch (error) {
         setError(true);
         setLoading(false);
@@ -66,6 +74,10 @@ export default function Job() {
                   <span>•</span>
                   <span className="text-gray-500">
                     {listing.address}
+                  </span>
+                  <span>•</span>
+                  <span className="text-gray-500">
+                    Posted on {listing.createdAt.slice(0,10)}
                   </span>
                 </div>
 
@@ -130,6 +142,30 @@ export default function Job() {
                     </span>
                   ))}
                 </div>
+              </div>
+            </div>
+            {/* -------- RIGHT SIDE -------- */}
+            <div className="space-y-6">
+              <div className="rounded-2xl bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">Posted By</h3>
+                {owner && (
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-3">
+                      {owner.name?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                    <h4 className="font-semibold text-gray-900">{owner.name}</h4>
+                    <p className="text-gray-500 text-sm mb-4">{owner.title || 'Job Seeker'}</p>
+                    <Link 
+                      to={`/profile/${owner._id}`}
+                      className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-medium"
+                    >
+                      View Profile
+                    </Link>
+                  </div>
+                )}
+                {!owner && !loading && (
+                  <p className="text-gray-500 text-center">Loading owner info...</p>
+                )}
               </div>
             </div>
           </div>

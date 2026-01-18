@@ -9,14 +9,49 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useRef } from 'react';
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const Profile = () => {
   
-  const {currentUser, loading, error} = useSelector(state => state.user)
+  const {currentUser} = useSelector(state => state.user)
   const [file, setFile] = useState(undefined)
   const [formData, setFormData] = useState({})
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
+  const params = useParams()
   
-  console.log(currentUser);
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (params.userId && params.userId !== currentUser?._id) {
+        try {
+          setLoading(true)
+          const res = await fetch(`/api/user/${params.userId}`, {
+            credentials: 'include'
+          })
+          const data = await res.json()
+          if (data.success === false) {
+            setError(true)
+            setLoading(false)
+            return
+          }
+          setUser(data)
+          setLoading(false)
+        } catch (error) {
+          setError(true)
+          setLoading(false)
+        }
+      } else {
+        setUser(currentUser)
+      }
+    }
+    fetchUser()
+  }, [params.userId, currentUser])
+  
+  const displayUser = user || currentUser
+  
+  console.log(displayUser);
   
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 font-sans">
@@ -40,25 +75,25 @@ const Profile = () => {
             {/* User Info */}
             <div className="text-white text-center md:text-left flex-1">
               <h1 className="text-3xl font-bold flex items-center justify-center md:justify-start gap-2">
-                {currentUser.name} <MdVerified className="text-blue-300" />
+                {displayUser?.name} <MdVerified className="text-blue-300" />
               </h1>
-              <p className="text-blue-100 text-lg">{currentUser.title}</p>
+              <p className="text-blue-100 text-lg">{displayUser?.title}</p>
               <div className="flex items-center justify-center md:justify-start gap-4 mt-2 text-sm opacity-90">
-                <span className="flex items-center gap-1"><FaMapMarkerAlt />{currentUser.location}</span>
+                <span className="flex items-center gap-1"><FaMapMarkerAlt />{displayUser?.location}</span>
                 <span className="bg-green-500 px-3 py-0.5 rounded-full text-xs font-bold">Online</span>
               </div>
             </div>
 
             {/* Header Actions */}
             <div className="flex gap-3">
-              <button className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-5 py-2 rounded-xl flex items-center gap-2 transition">
-                <Link to='/update-profile'>
+              {params.userId && params.userId !== currentUser?._id ? ('') : (
+                <button className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-5 py-2 rounded-xl flex items-center gap-2 transition">
+                <Link to='/update-profile' className='flex items-center gap-2'>
                   <FaEdit /> Edit Profile
                 </Link>
               </button>
-              <button className="bg-white text-blue-700 px-5 py-2 rounded-xl font-bold hover:bg-gray-100 transition">
-                Message
-              </button>
+              )}
+              
             </div>
           </div>
         </div>
@@ -70,18 +105,18 @@ const Profile = () => {
           <div className="space-y-6">
             <Card title="About Me">
               <p className="text-gray-600 text-sm leading-relaxed">
-                {currentUser.bio ? (currentUser.bio) : (
-                  
+                {displayUser?.bio ? (displayUser.bio) : (
+                  params.userId ? 'No bio available' : (
                     <Link to='/update-profile'>
                       +Add Bio
                     </Link>
-
+                  )
                 )}
               </p>
               <div className="mt-6">
                 <h4 className="font-bold mb-3 text-gray-800">Skills</h4>
                 <div className="flex flex-wrap gap-2">
-                  {currentUser.skills && currentUser.skills.map(skill => (
+                  {displayUser?.skills && displayUser.skills.map(skill => (
                     <span key={skill} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-xs font-medium border border-gray-200">
                       {skill}
                     </span>
@@ -91,7 +126,7 @@ const Profile = () => {
             </Card>
 
             <Card title="Work Experience" hasAdd>
-              {currentUser.workExperience && currentUser.workExperience.map((exp, index) => (
+              {displayUser?.workExperience && displayUser.workExperience.map((exp, index) => (
                 <ExperienceItem key={index} company={exp.company} role={exp.role} date={exp.period} />
               ))}
             </Card>
@@ -100,15 +135,15 @@ const Profile = () => {
           {/* Column 2: Education & Projects */}
           <div className="space-y-6">
             <Card title="Education" hasAdd>
-              {currentUser.education && currentUser.education.map((edu, index) => (
+              {displayUser?.education && displayUser.education.map((edu, index) => (
                 <ExperienceItem key={index} company={edu.institute} role={edu.degree} date={edu.period} />
               ))}
             </Card>
             <Card title="Contact Details">
               <div className="space-y-3 text-sm text-gray-600">
-                <div className="flex items-center gap-3"><HiOutlineMail className="text-blue-600" /> {currentUser.email}</div>
-                <div className="flex items-center gap-3"><FaLinkedin className="text-blue-600" /> {currentUser.linkedin}</div>
-                <div className="flex items-center gap-3"><FaGithub className="text-gray-900" />{currentUser.github}</div>
+                <div className="flex items-center gap-3"><HiOutlineMail className="text-blue-600" /> {displayUser?.email}</div>
+                <div className="flex items-center gap-3"><FaLinkedin className="text-blue-600" /> {displayUser?.linkedin}</div>
+                <div className="flex items-center gap-3"><FaGithub className="text-gray-900" />{displayUser?.github}</div>
               </div>
             </Card>
           </div>
@@ -131,13 +166,6 @@ const Profile = () => {
                 </Link>
               </button>
             </div>
-
-            <Card title="Documents">
-              <button className="w-full border-2 border-dashed border-gray-200 hover:border-blue-400 py-4 rounded-2xl flex flex-col items-center gap-2 transition text-gray-500">
-                <FaFileDownload size={24} />
-                <span className="text-xs font-bold uppercase tracking-wider">Download Resume</span>
-              </button>
-            </Card>
           </div>
 
         </div>
