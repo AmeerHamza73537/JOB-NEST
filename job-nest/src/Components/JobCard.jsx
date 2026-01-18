@@ -1,11 +1,13 @@
 import React from "react";
 import { Bookmark } from "lucide-react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const JobCard = ({ listing }) => {
   const {currentUser} = useSelector((state) => state.user)
   return (
     <div className="w-full max-w-5xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition">
+      <Link to={`/listing/${listing._id}`}>
       <div className="flex items-center justify-between">
         {/* Left section */}
         <div className="flex items-start gap-4">
@@ -52,6 +54,7 @@ const JobCard = ({ listing }) => {
           </button>
         </div>
       </div>
+      </Link>
     </div>
   );
 };
