@@ -5,13 +5,11 @@ import {
 } from 'react-icons/fa';
 import { HiOutlineMail } from 'react-icons/hi';
 import { MdVerified } from 'react-icons/md';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { useRef } from 'react';
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
-
+import { LogOutIcon } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useState, useEffect, useRef } from 'react';
+import { signoutStart, signoutSuccess, signoutFailure } from '../redux/user/UserSlice.js'
 const Profile = () => {
   
   const {currentUser} = useSelector(state => state.user)
@@ -21,7 +19,27 @@ const Profile = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const params = useParams()
-  
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const handleSignOut = async () => {
+    try {
+      dispatch(signoutStart())
+      const res = await fetch('/api/auth/sign-out', {
+        credentials: 'include',
+      })
+      const data = await res.json()
+      if(data.success === false) {
+        signoutFailure(data.message)
+        return
+      }
+      dispatch(signoutSuccess(data))
+      navigate('/')
+    } catch (error) {
+      dispatch(signoutFailure(error.message))
+    }
+  }
+
   useEffect(() => {
     const fetchUser = async () => {
       if (params.userId && params.userId !== currentUser?._id) {
@@ -93,6 +111,11 @@ const Profile = () => {
                 </Link>
               </button>
               )}
+              <button 
+                onClick={handleSignOut}
+                className="bg-red-700 hover:bg-red-600 backdrop-blur-md text-white px-5 py-2 rounded-xl flex items-center gap-2 transition">
+                <LogOutIcon /> Logout
+              </button>
               
             </div>
           </div>

@@ -10,7 +10,8 @@ import { useDispatch, useSelector } from 'react-redux'
 export default function Signin() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData ] = useState({})  
-  const { loading, error } = useSelector((state) => state.user)
+  // const { loading, error } = useSelector((state) => state.user)
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -25,6 +26,7 @@ export default function Signin() {
     e.preventDefault()
     try {
       dispatch(signinStart())
+      setLoading(true)
       const res = await fetch('/api/auth/sign-in', {
         method: 'POST',
         headers: {
@@ -42,6 +44,7 @@ export default function Signin() {
       navigate('/profile')
     } catch (error) {
       console.log(error);
+      setLoading(false)
       dispatch(signinFailure(error.message))
     }
   }
@@ -107,8 +110,8 @@ export default function Signin() {
               type="submit"
               className="bg-gradient-to-r from-[#5fa2d8] to-[#3f7fb0] w-full text-white py-3 rounded-lg font-semibold hover:font-bold hover:shadow-xl hover:cursor-pointer transition"
             >
-              {/* {loading ? 'Signing in...' : 'Sign in'} */}
-              Sign In
+              {loading ? 'Signing in...' : 'Sign in'}
+              {/* Sign In */}
             </button>
           </form>
 
