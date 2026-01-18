@@ -23,6 +23,25 @@ const PostJob = () => {
     qualifications: '',
     skills: '',
   })
+  const [skills, setSkills] = useState([""])
+
+  const handleSkillChange = (e, index) => {
+    const value = e.target.value;
+    setSkills((prev) => {
+      const copy = [...prev];
+      copy[index] = value;
+      return copy;
+    });
+  };
+
+  const handleAddSkill = () => {
+    setSkills((prev) => [...prev, ""]);
+  };
+
+  const handleRemoveSkill = (index) => {
+    setSkills((prev) => prev.filter((_, i) => i !== index));
+  };
+
 
   const handleChange = async (e) => {
       setFormData({
@@ -45,7 +64,7 @@ const PostJob = () => {
         credentials: 'include',
         body: JSON.stringify({
           ...formData,
-          // userRef: currentUser._id,
+          skills: skills.filter(s => s.trim() !== '').join(', '),
       })
       })
       const data = await res.json()
@@ -172,7 +191,7 @@ const PostJob = () => {
               rows="6"
               placeholder="Tell candidates about the role, the team, and the mission..."
               onChange={handleChange}
-              className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-[2rem] resize-none"
+              className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-[1rem] resize-none"
               required
             />
           </div>
@@ -251,7 +270,7 @@ const PostJob = () => {
             />
           </div>
 
-          <div>
+          {/* <div>
             <label className="text-sm font-bold text-slate-700">Keywords / Skills</label>
             <input
               id='skills'
@@ -262,7 +281,37 @@ const PostJob = () => {
               className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-xl"
               required
             />
+          </div> */}
+          <div className="">
+            <label className="text-sm font-bold text-slate-700">Keywords / Skills</label>
+            <div className="space-y-4">
+              {skills.map((skill, index) => (
+                <div key={index} className="flex gap-2">
+                  <input 
+                    type="text"
+                    placeholder='Enter the desired skill'
+                    value={skill}
+                    onChange={(e) => handleSkillChange(e, index)}
+                    className='w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-xl' 
+                    required
+                  />
+                  <button 
+                    type='button'
+                    onClick={() => handleRemoveSkill(index)}
+                    className='px-6 py-3 bg-slate-900 text-white rounded-2xl font-bold hover:bg-black transition'
+                  >Remove</button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={handleAddSkill}
+                className="px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200"
+              >
+                Add Skill
+              </button>
+            </div>
           </div>
+
         </div>
       </section>
 

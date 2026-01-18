@@ -22,7 +22,7 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          <Link to='/' className="text-[#7A8A9E] hover:text-black transition">Find Jobs</Link>
+          <Link to='/search-job' className="text-[#7A8A9E] hover:text-black transition">Find Jobs</Link>
           <Link to='/' className="text-[#7A8A9E] hover:text-black transition">Find Talents</Link>
           <Link to='/' className="text-[#7A8A9E] hover:text-black transition">Why JobNest?</Link>
         </div>

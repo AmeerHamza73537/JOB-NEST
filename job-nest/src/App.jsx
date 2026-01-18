@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react'
-import Header from './Components/header'
+import Header from './Components/Header.jsx'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Signin from './Pages/Signin'
 import Signup from './Pages/Signup'
@@ -9,6 +9,8 @@ import Profile from './Pages/Profile'
 import PostJob from './Pages/PostJob'
 import UpdateProfile from './Pages/UpdateProfile'
 import Footer from './Components/Footer'
+import JobCard from './Components/JobCard';
+import SearchJobs from './Pages/SearchJobs';
 // import './App.css'
 
 function App() {
@@ -24,6 +26,7 @@ function App() {
           <Route path='/profile'element={<Profile/>} />
           <Route path='/create-job'element={<PostJob/>} />
           <Route path='/update-profile'element={<UpdateProfile/>} />
+          <Route path='/search-job'element={<SearchJobs/>} />
         </Routes>
         {/* <Footer/> */}
       </BrowserRouter>

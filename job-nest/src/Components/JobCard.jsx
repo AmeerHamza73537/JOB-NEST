@@ -1,54 +1,59 @@
 import React from "react";
-import { FaBuilding, FaMapMarkerAlt, FaDollarSign, FaClock } from "react-icons/fa";
+import { Bookmark } from "lucide-react";
+import { useSelector } from "react-redux";
 
-function JobCard() {
+const JobCard = ({ listing }) => {
+  const {currentUser} = useSelector((state) => state.user)
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg flex justify-between items-center">
-      {/* Left Section: Job Info */}
-      <div className="flex items-center space-x-4">
-        {/* Featured Tag */}
-        <span className="bg-blue-100 text-blue-600 text-xs font-semibold px-3 py-1 rounded-full">
-          Featured
-        </span>
-        {/* Company Logo */}
-        <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
-          T
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold text-gray-800">Senior Frontend Developer</h2>
-          <p className="text-gray-600 text-sm">TechCorp Inc. · San Francisco, CA</p>
-        </div>
-      </div>
+    <div className="w-full max-w-5xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition">
+      <div className="flex items-center justify-between">
+        {/* Left section */}
+        <div className="flex items-start gap-4">
+          {/* Company logo */}
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-600 text-white font-bold text-lg">
+            {listing.company.charAt(0)}
+          </div>
 
-      {/* Middle Section: Salary, Time Posted */}
-      <div className="flex flex-col items-center space-y-2">
-        <div className="flex items-center space-x-2 text-gray-600">
-          <FaDollarSign size={16} />
-          <p className="text-sm">$120k - $160k</p>
-        </div>
-        <div className="flex items-center space-x-2 text-gray-600">
-          <FaClock size={16} />
-          <p className="text-sm">2 days ago</p>
-        </div>
-      </div>
+          {/* Job info */}
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">
+              {listing.jobTitle}
+            </h2>
 
-      {/* Right Section: Job Tags and Apply Button */}
-      <div className="flex items-center space-x-4">
-        {/* Job Tags */}
-        <div className="flex space-x-2">
-          <span className="bg-green-100 text-green-600 text-xs font-semibold px-3 py-1 rounded-full">Remote</span>
-          <span className="bg-blue-100 text-blue-600 text-xs font-semibold px-3 py-1 rounded-full">React</span>
-          <span className="bg-yellow-100 text-yellow-600 text-xs font-semibold px-3 py-1 rounded-full">TypeScript</span>
-          <span className="bg-teal-100 text-teal-600 text-xs font-semibold px-3 py-1 rounded-full">Tailwind CSS</span>
+            <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-gray-500">
+              <span>{listing.company}</span>
+              <span>•</span>
+              <span>{listing.address}</span>
+              <span>•</span>
+              <span className="font-medium text-gray-700">${listing.minSalary} - ${listing.maxSalary}</span>
+              <span>•</span>
+              <span>2 days ago</span>
+            </div>
+
+            {/* Tags */}
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-600">
+                {listing.workType}
+              </span>
+              {listing.skills && listing.skills.split(', ').filter(skill => skill.trim()).map((skill) => (
+                <span key={skill.trim()} className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+                {skill.trim()}
+              </span>
+              ))}
+              
+            </div>
+          </div>
         </div>
 
-        {/* Apply Now Button */}
-        <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-          Apply Now
-        </button>
+        {/* Right section */}
+        <div className="flex items-center gap-4">
+          <button className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 transition">
+            Apply Now
+          </button>
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default JobCard;
