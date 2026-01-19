@@ -1,5 +1,6 @@
 import { errorHandler } from '../utils/error.js';
 import bcryptjs from 'bcryptjs'
+import mongoose from 'mongoose'
 import User from '../model/user.js'
 import Listing from '../model/listing.js'
 
@@ -60,5 +61,27 @@ export const getUser = async (req, res, next) => {
         res.status(200).json(rest)
     } catch (error) {
         next(error)
+    }
+}
+
+export const searchUsers = async (req, res, next) => {
+    const { name, userId } = req.query;
+    try {
+        let query = {};
+        if (name) {
+            query.$or = [
+                { name: { $regex: name, $options: 'i' } },
+                { bio: { $regex: name, $options: 'i' } },
+                { 'workExperience.role': { $regex: name, $options: 'i' } },
+                { 'education.degree': { $regex: name, $options: 'i' } },
+            ];
+        }
+        if (userId) {
+            query._id = { $ne: new mongoose.Types.ObjectId(userId) };
+        }
+        const users = await User.find(query).select('-password');
+        res.status(200).json(users);
+    } catch (error) {
+        next(error);
     }
 }

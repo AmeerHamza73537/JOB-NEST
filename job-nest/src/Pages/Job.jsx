@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Contact from "../Components/Contact";
-import { Link } from 'react-router-dom'
+import { Delete } from 'lucide-react';
+
 export default function Job() {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [contact, setContact] = useState(false)
   const [owner, setOwner] = useState(null);
+  const [userListing, setUserListing] = useState([])
   const params = useParams();
   const { currentUser } = useSelector((state) => state.user);
 
@@ -42,6 +44,30 @@ export default function Job() {
     };
     fetchListings();
   }, [params.listingId]);
+
+  const handleDeleteListing = async (listingId) => {
+    try {
+      const res = await fetch(`/api/listing/delete/${listingId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+      if(!res.ok) {
+        const t = await res.text().catch(() => null)
+        console.error('Delete Failed:', res.status.t)
+        return
+      }
+      const data = await res.json()
+      if(data.success === false){
+        console.log(data.message);
+        return
+      }
+      setUserListing((prev) => prev.filter((listing) => listing._id !== listingId))
+    } catch (error) {
+      console.log(error.message);
+      
+    }
+  }
+
 
   return (
     <main className="min-h-screen bg-[#F8F9FB] py-10 px-4">
@@ -90,12 +116,25 @@ export default function Job() {
                   </span>
                 </div>
               </div>
-            {currentUser && listing.userRef !== currentUser._id && !contact && (
+            {currentUser && listing.userRef !== currentUser._id && !contact ? (
                 <Link 
                     to={`/apply/${listing._id}`}
                     className="rounded-lg bg-blue-600 px-6 py-2 text-white font-medium hover:bg-blue-700 transition inline-block">
                   Apply Now
                 </Link>
+            ) : (
+              <div className="">
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handleDeleteListing(listing._id)
+                  }}
+                  className="bg-red-700 hover:bg-red-600 backdrop-blur-md text-white px-5 py-2 rounded-xl flex items-center gap-2 transition">
+                  <Link to={'/'} className="flex gap-2">
+                    <Delete />Delete Job
+                  </Link>
+                </button>
+              </div>
             )}
               {contact && <Contact listing={listing} owner={listing.userRef} />}
             </div>

@@ -5,6 +5,7 @@ import Testimonials from "../Components/HomeComponents/Testimonials";
 import FinalCTA from "../Components/HomeComponents/FinalCTA";
 import { useSelector } from "react-redux";
 import LoggedHero from "../Components/HomeComponents/LoggedHero";
+import Footer from "../Components/Footer";
 
 export default function HeroSection() {
   const { currentUser } = useSelector((state) => state.user);
@@ -21,6 +22,7 @@ export default function HeroSection() {
           <WhyUs />
           <Testimonials />
           <FinalCTA />
+          <Footer/>
         </div>
       )}
     </>

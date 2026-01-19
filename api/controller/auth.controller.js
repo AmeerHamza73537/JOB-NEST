@@ -69,3 +69,13 @@ export const signout = async (req, res, next) => {
         next(error)
     }
 }
+
+// export const sendVerifyOtp = async (req, res, next) => {
+//     try {
+//         const {userId} = req.body;
+//         const user = await User.findById(userId)
+
+//     } catch (error) {
+//         next(error)
+//     }
+// }

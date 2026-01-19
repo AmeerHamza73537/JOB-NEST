@@ -9,7 +9,8 @@ export default function LoggedHero() {
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(false)
   const [ error, setError] = useState(false)
-  
+  const [showListings, setShowLisitngs] = useState(false)
+
   const handleClick = async (e) => {
     try {
       setLoading(true)
@@ -23,6 +24,7 @@ export default function LoggedHero() {
       return
     }
     const data = await res.json()
+    setShowLisitngs(true)
     setListings(data)
     setLoading(false)
     } catch (error) {
@@ -31,6 +33,12 @@ export default function LoggedHero() {
       setLoading(false)
     }
   }
+
+  const handleHideListing = async () => {
+    setShowLisitngs(false)
+    setListings([])
+  }
+
 
   return (
     <div className="min-h-screen flex items-start justify-start pt-32 pl-24 bg-slate-50">
@@ -71,11 +79,21 @@ export default function LoggedHero() {
 
         {/* FULL WIDTH BUTTON */}
         <div className="mt-4 max-w-xl">
-          <button 
+          {!showListings ? (
+            <button 
             onClick={handleClick}
             className="w-full px-6 py-3 border border-slate-300 text-slate-700 font-bold rounded-xl hover:bg-slate-200 hover:cursor-pointer transition ">
             Show Your Posted Jobs
           </button>
+          ) : (
+            <button 
+            onClick={handleHideListing}
+            className="w-full px-6 py-3 border border-slate-300 text-slate-700 font-bold rounded-xl hover:bg-slate-200 hover:cursor-pointer transition ">
+            Hide Your Posted Jobs
+          </button>
+          )}
+          
+          
           <div className="">
             {loading && <p className="text-slate-500 mt-2">Loading your jobs...</p>}
             {error && <p className="text-red-500 mt-2">Error loading jobs. Please try again.</p>}
