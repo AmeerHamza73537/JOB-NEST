@@ -16,7 +16,7 @@ mongoose
     .catch((err)=>console.log(err))
     
 const app = express()
-
+const port = process.env.PORT || 3000
 app.use(express.json());
 app.use(cookieParser());
 // app.use(cors());
@@ -43,5 +43,5 @@ app.use((err, req, res, next)=>{
 });
 
 app.listen(3000, ()=>{
-    console.log('Server is running on PORT 3000'); 
+    console.log(`Server is running on PORT ${port}`); 
 })

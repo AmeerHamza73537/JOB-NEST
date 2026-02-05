@@ -14,7 +14,6 @@ import SearchJobs from './Pages/SearchJobs';
 import SearchTalent from './Pages/SearchTalent.jsx';
 import Job from './Pages/Job.jsx';
 import ApplyJob from './Pages/ApplyJob.jsx';
-import ForgotPassword from './Pages/ForgotPassword.jsx';
 // import './App.css'
 
 function App() {
@@ -34,7 +33,6 @@ function App() {
           <Route path='/search-talent'element={<SearchTalent/>} />
           <Route path='/listing/:listingId'element={<Job/>} />
           <Route path='/apply/:listingId'element={<ApplyJob/>} />
-          <Route path='/forgot-password'element={<ForgotPassword/>} />
         </Routes>
         {/* <Footer/> */}
       </BrowserRouter>

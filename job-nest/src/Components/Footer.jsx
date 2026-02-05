@@ -11,7 +11,7 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="bg-slate-100 text-slate-600 pt-12 pb-6">
+    <footer className="text-slate-600 pt-12 pb-6">
       <div className="max-w-7xl mx-auto px-6">
 
         {/* TOP SECTION */}
@@ -41,14 +41,14 @@ const Footer = () => {
 
           {/* Links */}
           <div className="lg:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-6">
-            <FooterLinkGroup
+            {/* <FooterLinkGroup
               title="For Candidates"
               links={["Browse Jobs", "Career Advice", "Resume Builder", "Job Alerts"]}
-            />
-            <FooterLinkGroup
+            /> */}
+            {/* <FooterLinkGroup
               title="For Employers"
               links={["Post a Job", "Talent Pool", "Pricing Plans", "Hiring Solutions"]}
-            />
+            /> */}
             <FooterLinkGroup
               title="Company"
               links={["About Us", "Contact", "Privacy Policy", "Terms of Service"]}
@@ -66,7 +66,7 @@ const Footer = () => {
         {/* BOTTOM */}
         <div className="pt-6 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-slate-400">
           <p>© 2026 JobNest Inc. All rights reserved.</p>
-          <div className="flex gap-4">
+          {/* <div className="flex gap-4">
             <a href="#" className="hover:text-blue-600 transition">
               Cookies
             </a>
@@ -76,7 +76,7 @@ const Footer = () => {
             <a href="#" className="hover:text-blue-600 transition">
               Sitemap
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>

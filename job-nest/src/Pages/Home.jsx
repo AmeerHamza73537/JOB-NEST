@@ -9,7 +9,7 @@ import Footer from "../Components/Footer";
 
 export default function HeroSection() {
   const { currentUser } = useSelector((state) => state.user);
-
+// {UserLoggedIn ? ('Inside') : ('Outside')}
   return (
     <>
       {currentUser ? (

@@ -96,12 +96,6 @@ export default function Signin() {
                 className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
               />
-              <Link
-                to="/forgot-password"
-                className="absolute top-1/2 right-12 -translate-y-1/2 text-teal-500 text-sm"
-              >
-                Forgot password?
-              </Link>
             </div>
 
             {/* Sign In Button */}

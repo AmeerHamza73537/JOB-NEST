@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { Link } from "react-router-dom";
 
 export default function Hero() {
   const heroRef = useRef(null);
@@ -47,7 +48,9 @@ export default function Hero() {
         </p>
         <div className="mt-10">
           <button className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold px-10 py-4 rounded-xl shadow-lg transition">
-            Explore Jobs →
+            <Link to={'/search-job'}>
+              Explore Jobs →
+            </Link>
           </button>
         </div>
         <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
