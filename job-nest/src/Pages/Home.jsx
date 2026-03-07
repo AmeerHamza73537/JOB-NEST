@@ -1,5 +1,5 @@
 import React from "react";
-import Hero from "../Components/HomeComponents/hero";
+import Hero from "../Components/HomeComponents/Hero";
 import WhyUs from "../Components/HomeComponents/WhyUs";
 import Testimonials from "../Components/HomeComponents/Testimonials";
 import FinalCTA from "../Components/HomeComponents/FinalCTA";
