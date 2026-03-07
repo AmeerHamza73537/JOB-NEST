@@ -1,0 +1,71 @@
+# compiled output
+/bin/
+/obj/
+/build/
+/dist/
+/out/
+
+# Visual Studio / VSCode
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vcxproj.user
+.vscode/
+*.code-workspace
+
+# logs and databases
+*.log
+*.pdb
+*.opendb
+*.opensdf
+*.sdf
+*.db
+*.cache
+
+# OS generated
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# temporary files
+*.tmp
+*.temp
+~$*
+*.swp
+
+# package managers
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+packages/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+env/
+ENV/
+
+# build tools
+*.exe
+*.dll
+*.obj
+*.lib
+*.so
+*.dylib
+
+# other
+*.class
+*.jar
+*.war
+
+# user-specific/machine‑specific
+*.userprefs
+*.localhistory/
+
+
+.env

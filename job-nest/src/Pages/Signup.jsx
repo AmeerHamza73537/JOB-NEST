@@ -22,7 +22,7 @@ const Signup = () => {
     e.preventDefault()
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:3000/api/auth/sign-up', {
+      const res = await fetch(`${import.meta.env.VITE_REACT_APP_BASE_BACKEND_URL}/api/auth/sign-up`, {
         method: 'POST',
         headers:{
           'Content-Type': 'application/json',
