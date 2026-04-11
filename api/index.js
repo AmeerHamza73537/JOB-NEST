@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(cookieParser());
 // app.use(cors());
 app.use(cors({
-  origin: `${import.meta.env.FRONTEND_URL}`, // frontend URL
+  origin: `${import.meta.env.FRONTEND_URL || https://job-nest-hela-4rwys0m02-ameer-hamzas-projects-cd72baf1.vercel.app/}`, // frontend URL
   credentials: true               // allow cookies or Authorization headers
 }));
 
