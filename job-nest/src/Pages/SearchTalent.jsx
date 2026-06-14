@@ -19,7 +19,7 @@ export default function SearchTalent() {
         setUsers(data);
         setNoResult(data.length === 0);
       } catch (error) {
-        console.error(error);
+        // console.error(error);
         setUsers([]);
         setNoResult(true);
       }

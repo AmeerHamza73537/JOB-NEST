@@ -6,51 +6,58 @@ import { MdOutlineMailOutline } from "react-icons/md";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({})
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-
-  const handleChange = (e)=>{
+  const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.id]: e.target.value,
-    })
-  }
-  const handleSubmit = async (e)=>{
-    e.preventDefault()
+    });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
       setLoading(true);
-      const res = await fetch(`${import.meta.env.VITE_REACT_APP_BASE_BACKEND_URL}/api/auth/sign-up`, {
-        method: 'POST',
-        headers:{
-          'Content-Type': 'application/json',
+      const res = await fetch(
+        `${import.meta.env.VITE_REACT_APP_BASE_BACKEND_URL}/api/auth/sign-up`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify(formData)
-      })
+      );
 
-      const data = await res.json()
-      if(formData.password.length < 8) {
-        alert('Password must be at least 8 characters.')
+      const data = await res.json();
+      if (formData.password.length < 8) {
+        alert("Password must be at least 8 characters.");
+        return;
+      }
+      if (data.message === "User already exists with this email.") {
+        setError(
+          data.message ||
+            "User already exist with this email. Please user anoter one.",
+        );
         return
       }
-      if (!res.ok || data.success === false){
-        setLoading(false)
-        setError(data.message || 'Failed to create account')
-        return
+      if (!res.ok || data.success === false) {
+        setLoading(false);
+        setError(data.message || "Failed to create account");
+        return;
       }
-      
-      setLoading(false)
-      setError(null)
-      navigate('/sign-in')
-
+      setLoading(false);
+      setError(null);
+      navigate("/sign-in");
     } catch (error) {
-      setLoading(false)
-      setError(error.message)
-      console.log(error.message);
+      setLoading(false);
+      setError(error.message);
+      // console.log(error.message);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -98,9 +105,7 @@ const Signup = () => {
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Email
-              </label>
+              <label className="block text-sm font-medium mb-1">Email</label>
               <input
                 id="email"
                 type="email"
@@ -112,9 +117,7 @@ const Signup = () => {
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Password
-              </label>
+              <label className="block text-sm font-medium mb-1">Password</label>
               <div className="relative">
                 <input
                   id="password"
@@ -134,6 +137,7 @@ const Signup = () => {
               <p className="text-xs text-gray-500 mt-1">
                 Password must be at least 8 characters
               </p>
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
             </div>
 
             {/* Submit */}
@@ -141,22 +145,20 @@ const Signup = () => {
               type="submit"
               className="w-full bg-gradient-to-r from-[#5fa2d8] to-[#3f7fb0] hover:font-bold hover:shadow-xl hover:cursor-pointer text-white py-3 rounded-lg font-semibold transition"
             >
-              {loading ? 'Creating...':'Create Account'}
+              {loading ? "Creating..." : "Create Account"}
             </button>
           </form>
 
           {/* Divider */}
           <div className="flex items-center my-6">
             <div className="flex-1 h-px bg-gray-300"></div>
-            <span className="px-4 text-sm text-gray-500">
-              Or sign up with
-            </span>
+            <span className="px-4 text-sm text-gray-500">Or sign up with</span>
             <div className="flex-1 h-px bg-gray-300"></div>
           </div>
 
           {/* Google Only */}
           {/* <button className="w-full flex items-center justify-center gap-3 border py-3 rounded-lg hover:bg-gray-50 transition"> */}
-            <OAuth />
+          <OAuth />
           {/* </button> */}
 
           {/* Footer */}
@@ -170,8 +172,8 @@ const Signup = () => {
           <p className="text-xs text-gray-400 text-center mt-4">
             By creating an account, you agree to our{" "}
             <span className="underline cursor-pointer">Terms of Service</span>{" "}
-            and{" "}
-            <span className="underline cursor-pointer">Privacy Policy</span>.
+            and <span className="underline cursor-pointer">Privacy Policy</span>
+            .
           </p>
         </div>
       </div>

@@ -76,7 +76,7 @@ const Profile = () => {
 
   const displayUser = user || currentUser;
 
-  console.log(displayUser);
+  // console.log(displayUser);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 font-sans">

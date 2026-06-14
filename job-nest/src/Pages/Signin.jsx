@@ -43,7 +43,7 @@ export default function Signin() {
       dispatch(signinSuccess(data))
       navigate('/profile')
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       setLoading(false)
       dispatch(signinFailure(error.message))
     }
@@ -107,6 +107,7 @@ export default function Signin() {
               {loading ? 'Signing in...' : 'Sign in'}
               {/* Sign In */}
             </button>
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           </form>
 
           {/* Divider */}

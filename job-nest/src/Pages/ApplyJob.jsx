@@ -60,7 +60,7 @@ export default function ApplyJob() {
         alert('Application sent successfully');
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       alert('Error sending application');
     }
     setSubmitting(false);

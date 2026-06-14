@@ -53,12 +53,12 @@ export default function Job() {
       })
       if(!res.ok) {
         const t = await res.text().catch(() => null)
-        console.error('Delete Failed:', res.status.t)
+        // console.error('Delete Failed:', res.status.t)
         return
       }
       const data = await res.json()
       if(data.success === false){
-        console.log(data.message);
+        // console.log(data.message);
         return
       }
       setUserListing((prev) => prev.filter((listing) => listing._id !== listingId))

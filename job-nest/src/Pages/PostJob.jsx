@@ -70,12 +70,12 @@ const PostJob = () => {
       const data = await res.json()
       setLoading(false)
       if(!res.ok || data.success === false) {
-        console.log(data.message);
+        // console.log(data.message);
         return
       }
       navigate('/')
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       setError(error.message)
       setLoading(false)
     }

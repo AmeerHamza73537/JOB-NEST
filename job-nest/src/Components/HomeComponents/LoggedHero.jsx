@@ -96,7 +96,7 @@ export default function LoggedHero() {
           
           <div className="">
             {loading && <p className="text-slate-500 mt-2">Loading your jobs...</p>}
-            {error && <p className="text-red-500 mt-2">Error loading jobs. Please try again.</p>}
+            {/* {error && <p className="text-red-500 mt-2">Error loading jobs. Please try again.</p>} */}
             {!loading && error && listings.length === 0 && <p className="text-slate-500 mt-2">No jobs posted yet.</p>}
             {!loading && listings.map((listing) => (
                 <JobCard key={listing._id} listing={listing} />
