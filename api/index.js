@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(cookieParser());
 // app.use(cors());
 app.use(cors({
-  origin: `${import.meta.env.FRONTEND_URL || https://job-nest-2ien.vercel.app/}`, // frontend URL
+  origin: process.env.FRONTEND_URL || "https://job-nest-2ien.vercel.app", // frontend URL
   credentials: true               // allow cookies or Authorization headers
 }));
 
