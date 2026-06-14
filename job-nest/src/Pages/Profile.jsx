@@ -32,7 +32,7 @@ const Profile = () => {
   const handleSignOut = async () => {
     try {
       dispatch(signoutStart());
-      const res = await fetch("/api/auth/sign-out", {
+      const res = await fetch(`${import.meta.env.VITE_REACT_APP_BASE_BACKEND_URL}/api/auth/sign-out`, {
         credentials: "include",
       });
       const data = await res.json();

@@ -56,7 +56,7 @@ const PostJob = () => {
       setLoading(true)
       setError(false)
       
-      const res = await fetch('/api/listing/create-listing', {
+      const res = await fetch(`${import.meta.env.VITE_REACT_APP_BASE_BACKEND_URL}/api/listing/create-listing`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

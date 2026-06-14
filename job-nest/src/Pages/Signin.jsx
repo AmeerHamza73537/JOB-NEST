@@ -27,7 +27,7 @@ export default function Signin() {
     try {
       dispatch(signinStart())
       setLoading(true)
-      const res = await fetch('/api/auth/sign-in', {
+      const res = await fetch(`${import.meta.env.VITE_REACT_APP_BASE_BACKEND_URL}/api/auth/sign-in`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

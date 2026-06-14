@@ -30,7 +30,7 @@ export default function SearchJobs() {
     urlParams.set("order", order);
     if (startIndex > 0) urlParams.set("startIndex", startIndex);
     const searchQuery = urlParams.toString();
-    const res = await fetch(`/api/listing/get?${searchQuery}`);
+    const res = await fetch(`${import.meta.env.VITE_REACT_APP_BASE_BACKEND_URL}/api/listing/get?${searchQuery}`);
     const data = await res.json();
     if (data.length > 9) {
       setShowmore(true);

@@ -18,7 +18,7 @@ export default function Job() {
     const fetchListings = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/listing/get/${params.listingId}`);
+        const res = await fetch(`${import.meta.env.VITE_REACT_APP_BASE_BACKEND_URL}/api/listing/get/${params.listingId}`);
         const data = await res.json();
 
         if (data.success === false) {

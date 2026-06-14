@@ -13,7 +13,7 @@ export default function SearchTalent() {
   const fetchUsers = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/user/search/${currentUser?._id || ''}?name=${encodeURIComponent(searchTerm)}`);
+        const res = await fetch(`${import.meta.env.VITE_REACT_APP_BASE_BACKEND_URL}/api/user/search/${currentUser?._id || ''}?name=${encodeURIComponent(searchTerm)}`);
         if (!res.ok) throw new Error('Failed to fetch users');
         const data = await res.json();
         setUsers(data);

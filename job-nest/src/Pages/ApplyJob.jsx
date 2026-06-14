@@ -47,7 +47,7 @@ export default function ApplyJob() {
       formData.append('proposal', proposal);
       formData.append('resume', resume);
 
-      const res = await fetch(`/api/listing/apply/${listingId}`, {
+      const res = await fetch(`${import.meta.env.VITE_REACT_APP_BASE_BACKEND_URL}/api/listing/apply/${listingId}`, {
         method: 'POST',
         credentials: 'include',
         body: formData,
