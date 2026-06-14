@@ -12,8 +12,10 @@ export default function Signin() {
   const [formData, setFormData ] = useState({})  
   // const { loading, error } = useSelector((state) => state.user)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  
 
   const handleChange = async (e) => {
     setFormData({
@@ -38,6 +40,7 @@ export default function Signin() {
       const data = await res.json()
       if(!res.ok || data.success === false){
         dispatch(signinFailure(data.message))
+        setError(data.message)
         return
       }
       dispatch(signinSuccess(data))
@@ -107,8 +110,8 @@ export default function Signin() {
               {loading ? 'Signing in...' : 'Sign in'}
               {/* Sign In */}
             </button>
-            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           </form>
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
           {/* Divider */}
           <div className="flex items-center my-6">
@@ -137,7 +140,7 @@ export default function Signin() {
         </h2>
         <p className="text-lg text-center">
           Join over 10 million professionals who've found their dream careers
-          through JobFlow.
+          through JobNest.
         </p>
       </div>
     </section>
