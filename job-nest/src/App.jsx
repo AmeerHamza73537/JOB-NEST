@@ -14,6 +14,7 @@ import SearchJobs from './Pages/SearchJobs';
 import SearchTalent from './Pages/SearchTalent.jsx';
 import Job from './Pages/Job.jsx';
 import ApplyJob from './Pages/ApplyJob.jsx';
+import ChatWidget from './Components/ChatWidget.jsx';
 // import './App.css'
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path='/listing/:listingId'element={<Job/>} />
           <Route path='/apply/:listingId'element={<ApplyJob/>} />
         </Routes>
+        <ChatWidget/>
         {/* <Footer/> */}
       </BrowserRouter>
     </>

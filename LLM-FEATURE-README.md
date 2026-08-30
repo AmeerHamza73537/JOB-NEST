@@ -171,3 +171,155 @@ generates fresh text every time):
 
 The happy path — a real answer from Groq — could not be run here, as that needs
 a valid `GROQ_API_KEY`. Run the curl command above once you've added yours.
+
+---
+
+## Step 2: Chat Widget UI
+
+### What was built
+
+A single React component, `ChatWidget`, that puts a floating chat bubble in the
+bottom-right corner of every page of Job Nest. Click it and a small chat window
+opens; type a question, and the answer comes back from the `/api/chat` endpoint
+built in Step 1.
+
+The component is completely self-contained. It holds its own state, does its own
+network call, and has no props. Nothing else in the app knows it exists — which
+means it can be deleted by removing two lines, with zero risk to anything else.
+
+### Where the files live
+
+The task description referred to `src/components/ChatWidget.jsx`, but this
+project's folder is `src/Components/` with a capital C. The capital was used to
+match. This matters more than it looks: Windows treats the two spellings as the
+same folder, but the Linux servers that Vercel builds on do not, so a lowercase
+import would build fine locally and then fail in deployment.
+
+| Thing | Path |
+| --- | --- |
+| The new component | `job-nest/src/Components/ChatWidget.jsx` |
+| Root layout (2 lines added) | `job-nest/src/App.jsx` |
+
+### How the floating icon and chat window work
+
+**The state.** The component tracks five things with `useState`:
+
+| State | Holds |
+| --- | --- |
+| `isOpen` | whether the chat window is showing |
+| `messages` | the whole conversation, as `{ role, content }` objects |
+| `input` | whatever is currently typed in the text box |
+| `loading` | whether we're waiting on a reply |
+| `error` | an error message to display, or `null` |
+
+That's the entire feature. Everything on screen is drawn from those five values,
+so there's no manual DOM manipulation anywhere.
+
+**Toggling.** The icon's click handler flips `isOpen`. The chat window is
+wrapped in `{isOpen && (...)}`, which is React's way of saying "only draw this
+when the value is true" — so the window genuinely isn't in the page when closed,
+rather than being hidden with CSS. The icon itself swaps between a speech-bubble
+and an X so it doubles as a close button, and the window has its own X in the
+header.
+
+**The layout.** One `fixed` wrapper is pinned 24px from the bottom and right
+with `z-[9999]`, so it floats above every other element on the page regardless
+of what page you're on. The wrapper is a vertical flexbox in `items-end`, which
+is what makes the chat window sit directly above the icon and share its
+right-hand edge — no manual position calculations. The window is a fixed
+320x420px, and is itself a column flexbox: fixed header, `flex-1` message list
+that takes the leftover height and scrolls, fixed input row at the bottom.
+
+**Styling approach.** The project has no theme file to import from — `index.css`
+is just `@import "tailwindcss";` with no custom variables and no Tailwind config
+of custom colours. So the palette was read out of the existing components
+instead, and the same literal values are reused:
+
+| Colour | Used for | Taken from |
+| --- | --- | --- |
+| `#5fa2d8` → `#3f7fb0` gradient | icon, header, user bubbles, send button | the Header's logo and "Get Started" button |
+| `#F8F9FB` | message list background, input field | existing page backgrounds |
+| `#7A8A9E` | muted/secondary text | the Header's nav links |
+| `#cfe8ff` | header subtitle | existing accent usage |
+
+The rounded-full buttons, `hover:scale-[1.03]` / `active:scale-[0.97]` press
+effect, and shadow treatment are also copied from the existing Header buttons,
+so the widget reads as part of the same app rather than something bolted on.
+
+**Two small touches.** A `useEffect` watches `messages` and pins the scroll
+position to the bottom, so new replies are always visible without scrolling.
+Another focuses the text box when the window opens, so you can just start
+typing.
+
+### How it talks to the backend
+
+When you hit send, `handleSend` does the following:
+
+1. Trims the text and bails out if it's empty or a request is already running —
+   this is what stops double-sends from an impatient double-click.
+2. Snapshots the existing `messages` as `history`. This is deliberately taken
+   *before* the new message is added, because the backend expects the history
+   and the new message as separate fields.
+3. Adds the user's message to the list straight away and clears the box, so the
+   UI feels instant instead of waiting on the network.
+4. Sets `loading`, which makes a "typing..." bubble appear in the message list.
+5. `POST`s `{ message, history }` to
+   `${import.meta.env.VITE_REACT_APP_BASE_BACKEND_URL}/api/chat`. That env
+   variable is the same one every other page in this project already uses, so
+   the widget automatically points at localhost in development and at the
+   deployed API in production, with no code change.
+6. On success, appends `data.reply` as an assistant message.
+
+**Error handling happens at two levels.** If the server replies but the reply
+is an error (bad status, or no `reply` field), the server's own message is shown
+— so "Chat is not configured on the server" reaches the user as-is, which is
+genuinely useful while setting up. If the `fetch` itself throws — server down,
+no internet — the `catch` shows "Could not reach the assistant." Either way the
+error is rendered as a small red strip inside the chat window and `loading` is
+cleared in a `finally` block, so the widget never gets stuck on "typing..." and
+never takes the page down with it.
+
+### What it looks like and does, from a user's point of view
+
+You're on any Job Nest page. There's a blue circular button with a chat icon
+in the bottom-right corner, sitting above the page content and staying put as
+you scroll.
+
+Click it. A small white panel slides into place above the button, with a blue
+gradient header reading "Job Nest Assistant". The body shows a greeting: *"Hi!
+Ask me anything about finding jobs, writing proposals, or hiring on Job Nest."*
+
+Type "how do I write a good proposal?" and press Enter (or click the send
+arrow). Your message appears immediately on the right in a blue gradient bubble.
+A grey "typing..." bubble appears on the left. A second or two later it's
+replaced by the assistant's answer in a white bubble. Long conversations scroll,
+and the newest message is always in view.
+
+If something goes wrong, a small red message appears in the panel explaining
+what happened. The rest of Job Nest keeps working normally — you can close the
+chat and carry on.
+
+Click the X in the header, or the button again, to close it.
+
+### What was verified
+
+The app was built and run in a browser to check this, not just written:
+
+- `npm run build` succeeds; ESLint reports no problems in the new component.
+- The floating icon renders on `/` and stays present after navigating to
+  `/sign-in`, confirming it's on every page.
+- Measured live in the browser: icon is 56px and circular with the exact
+  `#5fa2d8 → #3f7fb0` gradient, 24px from the bottom edge, `position: fixed`,
+  `z-index: 9999`. The panel is exactly 320x420px and sits 12px above the icon
+  with their right edges aligned.
+- With the backend stopped, sending a message showed the user's bubble
+  right-aligned and the inline error "Could not reach the assistant" — the app
+  did not crash.
+- With the backend running, the message reached it successfully through CORS
+  and the server's own error text was displayed in the panel.
+- The browser console showed no React errors, only the two network errors from
+  those deliberate tests.
+
+Not verified: a real assistant reply, since that needs a valid `GROQ_API_KEY`
+(see Step 1). Everything up to and including the network round trip is
+confirmed working.
