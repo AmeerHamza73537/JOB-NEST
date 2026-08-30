@@ -323,3 +323,190 @@ The app was built and run in a browser to check this, not just written:
 Not verified: a real assistant reply, since that needs a valid `GROQ_API_KEY`
 (see Step 1). Everything up to and including the network round trip is
 confirmed working.
+
+---
+
+## Step 3: Reliability & Cost Controls
+
+A review pass over the two pieces built in Steps 1 and 2, tightening the places
+where a real user (or a flaky network) could cause trouble.
+
+Two of the four items requested here turned out to be **already in place** from
+the earlier steps. They're documented below anyway, since they're part of how
+the feature protects itself.
+
+### 1. Not letting a user spam requests — *mostly already there*
+
+**Already in place:** the send button carried `disabled={loading || !input.trim()}`
+from Step 2, and `handleSend` opened with a matching `if (!message || loading) return`.
+So the button visibly greys out while a reply is in flight, and the Enter key is
+blocked by the same guard.
+
+**What was added:** the `loading` check alone has a subtle hole. React state
+updates aren't applied immediately — `setLoading(true)` doesn't change the value
+the currently-running function can see. Two clicks arriving before React has had
+a chance to re-render would both read `loading` as `false` and both go through.
+
+The fix is a `useRef` called `inFlightRef`. Unlike state, a ref updates the
+instant you assign to it, so the second click sees the flag straight away. It's
+set the moment a send begins and cleared in the `finally` block, so it's released
+whether the request succeeded, failed, or threw.
+
+**The problem this prevents:** every duplicate request is a duplicate call to
+Groq that you pay for, and the replies come back out of order, which scrambles
+the conversation. An impatient double-click shouldn't cost money or corrupt the
+thread.
+
+*Verified: 5 clicks fired back-to-back in a single tick produced exactly 1
+network request.*
+
+### 2. Capping the conversation history — *already there on the server*
+
+**Already in place:** the backend's `sanitizeHistory` has always ended with
+`.slice(-10)`, so no more than 10 previous turns ever reach Groq. The magic
+number was replaced with a named `MAX_HISTORY` constant so the cap is findable
+and tunable, but the behaviour is unchanged.
+
+**What was added:** the *frontend* was sending its entire message list on every
+request. The server was throwing most of it away, so the Groq bill was never at
+risk — but the HTTP request itself grew with every exchange. A long conversation
+meant uploading the whole transcript each time, over and over.
+
+The widget now trims to the last 10 messages before sending, with its own
+`MAX_HISTORY` constant.
+
+**The problem this prevents:** LLMs charge per token, and every past message is
+re-sent and re-charged on every single turn. Without a cap, a long conversation
+doesn't just get expensive — it gets *progressively* more expensive, because
+each new message drags the entire history along with it. The cost of a chat
+grows with the square of its length. Capping at 10 makes the cost of any single
+message flat and predictable.
+
+The tradeoff: the assistant only remembers the last 10 turns. For a support
+chat about jobs and proposals, that's plenty.
+
+Keeping the cap on **both** sides is deliberate. The client cap saves bandwidth;
+the server cap is the one that actually protects the budget, because anyone can
+bypass the browser and post whatever they like directly to the endpoint. The
+client-side limit is a convenience — the server-side limit is the control.
+
+*Verified: with a 12-message conversation open, the outgoing request carried
+exactly 10 history entries.*
+
+### 3. "Powered by Groq" label
+
+A small line of 10px muted text (`#7A8A9E`, the same colour as the site's nav
+links) centred under the input box. It's honest about the fact that answers come
+from an AI model rather than a human support agent, which sets expectations —
+and it's a courtesy to the provider. Deliberately understated so it doesn't
+compete with the conversation.
+
+### 4. A single friendly failure message
+
+**The problem:** the widget previously displayed whatever error text the server
+sent back. That meant a user with no `GROQ_API_KEY` configured would see
+*"Chat is not configured on the server"* — which is meaningless to them, and
+quietly leaks a detail about how the backend is set up.
+
+**The fix:** the widget now shows **"Chat is temporarily unavailable"** for
+anything that isn't the user's fault — a missing API key (HTTP 500), Groq
+failing or timing out (502/504), or the server being unreachable entirely.
+
+Genuine 4xx responses are treated differently and still show the server's own
+wording, because those *are* the user's to act on: "message must be under 2000
+characters" tells them exactly what to change, where a generic message would
+leave them stuck.
+
+**What this prevents:** internal wording reaching end users, and — more
+importantly — a broken backend taking the page down with it. The `finally` block
+always clears the loading flag, so the widget can never get stuck showing
+"typing..." forever. Whatever goes wrong, you get one clear sentence and the
+rest of Job Nest keeps working.
+
+*Verified against all four cases: 500, 502, a thrown network error, and a 400.
+The first three showed the friendly message; the 400 kept its specific wording.
+None left the widget stuck, and the page stayed alive throughout.*
+
+---
+
+## Summary: the complete feature
+
+### What it does
+
+A chat assistant available on every page of Job Nest. A blue circular button
+floats in the bottom-right corner; clicking it opens a 320x420 chat window where
+users can ask questions about finding jobs, writing proposals, and hiring. The
+assistant is primed with a system prompt that keeps it on those topics and its
+answers concise.
+
+### The stack
+
+| Layer | What's used |
+| --- | --- |
+| LLM provider | **Groq**, via the official `groq-sdk` package |
+| Model | `llama-3.1-8b-instant` (configurable via `GROQ_MODEL`) |
+| Backend | Express 5 route at `POST /api/chat` (Node, ES modules) |
+| Frontend | React 19 component, Tailwind CSS v4, `lucide-react` icons |
+| Config | `GROQ_API_KEY` + `GROQ_MODEL` in `api/.env`, template in `api/.env.example` |
+
+Groq was chosen for speed and a free tier; `groq-sdk` over the OpenAI-compatible
+client because it needs no base-URL configuration.
+
+### Every file involved
+
+| File | Status |
+| --- | --- |
+| `api/route/chat.route.js` | new |
+| `api/index.js` | 2 lines added (import + `app.use`) |
+| `api/.env` | 2 keys added |
+| `api/.env.example` | new |
+| `job-nest/src/Components/ChatWidget.jsx` | new |
+| `job-nest/src/App.jsx` | 2 lines added (import + `<ChatWidget/>`) |
+
+No existing logic, routes, pages, or components were modified.
+
+### Safeguards in place
+
+- Message must be a non-empty string under 2000 characters (rejected with 400)
+- History capped at 10 turns, enforced on both client and server
+- One request at a time, enforced by a ref rather than lagging state
+- 15-second timeout on the Groq call, with SDK retries disabled
+- 512-token cap on replies
+- Malformed history entries filtered out server-side
+- Every failure path returns JSON; the server cannot be crashed by this route
+- One friendly user-facing message for any server-side failure
+
+### How to test it end to end
+
+1. Put a real key in `api/.env`:
+   `GROQ_API_KEY=gsk_...` — free from <https://console.groq.com/keys>
+2. Start the backend: `cd api && npm run dev` (port 3000)
+3. Confirm the endpoint works on its own, before involving the browser:
+
+```bash
+curl -X POST http://localhost:3000/api/chat -H "Content-Type: application/json" -d '{"message":"How do I write a good proposal?"}'
+```
+
+   You should get back `{"reply":"..."}` with real advice in it.
+
+4. Start the frontend: `cd job-nest && npm run dev` (port 5173)
+5. Open <http://localhost:5173>, click the blue bubble, and ask the same
+   question. The answer should appear in a white bubble on the left.
+
+**Things worth trying deliberately:**
+
+- Double-click send quickly — only one request should go out.
+- Stop the backend and send a message — you should see
+  "Chat is temporarily unavailable", and the rest of the site should still work.
+- Blank out `GROQ_API_KEY`, restart the backend, and send — same message.
+- Have a long conversation, then check the Network tab: the `history` array
+  should never exceed 10 entries.
+
+### Known limitations
+
+- The assistant only remembers the last 10 turns.
+- The conversation resets on page refresh — nothing is persisted.
+- The endpoint requires no login and has no per-user rate limit. The one-request-
+  at-a-time guard lives in the browser, so anyone posting directly to the
+  endpoint can bypass it. Before putting this in front of real traffic, add
+  server-side rate limiting by IP or user.

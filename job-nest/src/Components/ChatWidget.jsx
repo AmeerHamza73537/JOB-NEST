@@ -1,6 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
 
+// keep in sync with the same cap on the server (api/route/chat.route.js)
+const MAX_HISTORY = 10;
+const UNAVAILABLE_MESSAGE = "Chat is temporarily unavailable";
+
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -10,6 +14,9 @@ export default function ChatWidget() {
 
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
+  // `loading` state lags a tick behind, so a ref is what actually blocks a
+  // second send landing before the first one has re-rendered the button
+  const inFlightRef = useRef(false);
 
   // keep the newest message in view as the list grows
   useEffect(() => {
@@ -24,10 +31,14 @@ export default function ChatWidget() {
 
   const handleSend = async () => {
     const message = input.trim();
-    if (!message || loading) return;
+    if (!message || loading || inFlightRef.current) return;
+    inFlightRef.current = true;
 
-    // the history the backend needs is everything said *before* this message
-    const history = messages.map((m) => ({ role: m.role, content: m.content }));
+    // the history the backend needs is everything said *before* this message,
+    // trimmed to the last few turns so the request can't grow without bound
+    const history = messages
+      .slice(-MAX_HISTORY)
+      .map((m) => ({ role: m.role, content: m.content }));
 
     setMessages((prev) => [...prev, { role: "user", content: message }]);
     setInput("");
@@ -47,16 +58,22 @@ export default function ChatWidget() {
       const data = await res.json();
 
       if (!res.ok || !data?.reply) {
-        setError(data?.message || "Something went wrong. Please try again.");
+        // 400s are the user's own doing (empty / too long) so the server's
+        // specific wording helps; anything else is our problem, not theirs
+        const isClientError = res.status >= 400 && res.status < 500;
+        setError(
+          isClientError && data?.message ? data.message : UNAVAILABLE_MESSAGE
+        );
         return;
       }
 
       setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
     } catch {
       // network failure / server unreachable — never let this bubble up
-      setError("Could not reach the assistant. Check your connection.");
+      setError(UNAVAILABLE_MESSAGE);
     } finally {
       setLoading(false);
+      inFlightRef.current = false;
     }
   };
 
@@ -146,6 +163,11 @@ export default function ChatWidget() {
             >
               <Send size={16} />
             </button>
+          </div>
+
+          {/* footer */}
+          <div className="pb-2 bg-white text-center">
+            <span className="text-[10px] text-[#7A8A9E]">Powered by Groq</span>
           </div>
         </div>
       )}

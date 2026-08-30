@@ -6,6 +6,8 @@ const router = express.Router()
 const SYSTEM_PROMPT = 'You are a helpful assistant for Job Nest, a job marketplace app. Keep answers concise and relevant to jobs, proposals, and hiring.'
 const MAX_MESSAGE_LENGTH = 2000
 const REQUEST_TIMEOUT_MS = 15000
+// cap the turns forwarded to Groq — the client caps too, but never trust it
+const MAX_HISTORY = 10
 
 let groq = null
 const getGroq = () => {
@@ -27,7 +29,7 @@ const sanitizeHistory = (history) => {
             m && (m.role === 'user' || m.role === 'assistant') &&
             typeof m.content === 'string' && m.content.trim().length > 0
         )
-        .slice(-10)
+        .slice(-MAX_HISTORY)
         .map((m) => ({ role: m.role, content: m.content.slice(0, MAX_MESSAGE_LENGTH) }))
 }
 
